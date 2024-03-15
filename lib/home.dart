@@ -7,6 +7,7 @@ import 'package:sqlite/dataBase.dart';
 import 'package:sqlite/queryView.dart';
 
 import 'main.dart';
+import 'utils/sigleton.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -136,11 +137,14 @@ class _HomeState extends State<Home> {
       debugPrint(row.toString());
     }
 
+    singleton.add(lista: lista);
+
     Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) => QueryView(
-              lista: lista)));
+              deleteCallback: _delete,
+            )));
   }
 
   void _update() async {
