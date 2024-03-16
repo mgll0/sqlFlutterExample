@@ -5,10 +5,7 @@ import 'main.dart';
 import 'utils/sigleton.dart';
 
 class QueryView extends StatefulWidget {
-  final Function deleteCallback;
-
-  const QueryView({Key? key, required this.deleteCallback}) : super(key: key);
-
+  const QueryView({Key? key}) : super(key: key);
 
   @override
   State<QueryView> createState() => _QueryViewState();
@@ -29,10 +26,21 @@ class _QueryViewState extends State<QueryView> {
         children: [
           Column(
             children: [
-              Container(
+              Expanded(
+                  child: Container(
                 padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.blue, // Cambia el color de fondo del contenedor
+                  border: Border.all(
+                    color: Colors.black, // Cambia el color del borde
+                    width: 2.0, // Cambia el ancho del borde
+                  ),
+                  borderRadius: BorderRadius.circular(
+                      10.0), // Cambia el radio de la esquina del borde
+                  // Otros estilos de decoración como gradiente, imagen de fondo, sombra, etc., se pueden agregar aquí
+                ),
                 child: SizedBox(
-                  height: size.height * 0.8,
+                  height: MediaQuery.of(context).size.height,
                   width: size.width,
                   child: ListView.builder(
                       shrinkWrap: true,
@@ -46,10 +54,20 @@ class _QueryViewState extends State<QueryView> {
 
                         List user = [id, name, age];
 
-
                         return Padding(
                           padding: EdgeInsets.only(bottom: 15),
-                          child: Row(
+                          child: Container(
+                            padding: EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              color: Colors.grey,
+                              border: Border.all(
+                                color: Colors.black, // Cambia el color del borde
+                                width: 2.0, // Cambia el ancho del borde
+                              ),
+                              borderRadius: BorderRadius.circular(
+                                  10.0),
+                            ),
+                              child: Row(
                             children: [
                               ElevatedButton(
                                   onPressed: () {
@@ -62,8 +80,7 @@ class _QueryViewState extends State<QueryView> {
                                             content: Column(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                Text(
-                                                    'User Name: $name'),
+                                                Text('User Name: $name'),
                                                 Text('User Age: $age'),
                                               ],
                                             ),
@@ -76,21 +93,29 @@ class _QueryViewState extends State<QueryView> {
                                 child: Icon(Icons.edit),
                               ),
                               ElevatedButton(
-                                  onPressed: () => _delete(id), child: Icon(Icons.delete))
+                                  onPressed: () => _delete(id),
+                                  child: Icon(Icons.delete))
                             ],
-                          ),
+                          )),
                         );
                       }),
                 ),
-              )
+              ))
             ],
           )
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Acción a realizar cuando se presiona el botón flotante
+        },
+        child: Icon(Icons.add), // Ícono del botón flotante
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
-  void _edit(BuildContext context, List usuario){
+  void _edit(BuildContext context, List usuario) {
     final name = TextEditingController();
     final age = TextEditingController();
 
@@ -158,7 +183,16 @@ class _QueryViewState extends State<QueryView> {
                 final rowsAffected = await dbHelper.update(row);
                 debugPrint('updated $rowsAffected row(s)');
 
-                Navigator.of(context).pop(); // Cerrar el AlertDialog
+                final allRows = await dbHelper.queryAllRows();
+                List<Map<String, dynamic>> lista = [];
+                debugPrint('query all rows:');
+                for (final row in allRows) {
+                  lista.add(row);
+                  debugPrint(row.toString());
+                }
+                singleton.add(lista);
+                Navigator.pushReplacement(
+                    context, MaterialPageRoute(builder: (context) => QueryView()));
               },
               child: const Text('Guardar'),
             ),
@@ -166,13 +200,22 @@ class _QueryViewState extends State<QueryView> {
         );
       },
     );
-
   }
 
   void _delete(id) async {
     // Assuming that the number of rows is the id for the last row.
-
     final rowsDeleted = await dbHelper.delete(id);
     debugPrint('deleted $rowsDeleted row(s): row $id');
+
+    final allRows = await dbHelper.queryAllRows();
+    List<Map<String, dynamic>> lista = [];
+    debugPrint('query all rows:');
+    for (final row in allRows) {
+      lista.add(row);
+      debugPrint(row.toString());
+    }
+    singleton.add(lista);
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => QueryView()));
   }
 }

@@ -138,11 +138,7 @@ class _HomeState extends State<Home> {
     }
     singleton.add(lista);
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => QueryView(
-              deleteCallback: _delete,
-            )));
+        context, MaterialPageRoute(builder: (context) => QueryView()));
   }
 
   void _update() async {
