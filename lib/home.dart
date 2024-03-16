@@ -130,15 +130,13 @@ class _HomeState extends State<Home> {
 
   void _select(BuildContext context) async {
     final allRows = await dbHelper.queryAllRows();
-    List lista = [];
+    List<Map<String, dynamic>> lista = [];
     debugPrint('query all rows:');
     for (final row in allRows) {
-      lista.add(row.toString());
+      lista.add(row);
       debugPrint(row.toString());
     }
-
-    singleton.add(lista: lista);
-
+    singleton.add(lista);
     Navigator.push(
         context,
         MaterialPageRoute(

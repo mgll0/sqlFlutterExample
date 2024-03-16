@@ -23,7 +23,7 @@ class _QueryViewState extends State<QueryView> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final List lista = singleton.getList();
+    final List<Map<String, dynamic>> lista = singleton.getList();
     return Scaffold(
       body: Stack(
         children: [
@@ -39,7 +39,13 @@ class _QueryViewState extends State<QueryView> {
                       physics: const BouncingScrollPhysics(),
                       itemCount: lista.length,
                       itemBuilder: (BuildContext context, int index) {
-                        var usuario = lista[index].split(",");
+                        Map<String, dynamic> userData = lista[index];
+                        int id = userData['_id'];
+                        String name = userData['name'];
+                        int age = userData['age'];
+
+                        List user = [id, name, age];
+
 
                         return Padding(
                           padding: EdgeInsets.only(bottom: 15),
@@ -57,20 +63,20 @@ class _QueryViewState extends State<QueryView> {
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
                                                 Text(
-                                                    'User Name: ${usuario[1]}'),
-                                                Text('User Age: ${usuario[2]}'),
+                                                    'User Name: $name'),
+                                                Text('User Age: $age'),
                                               ],
                                             ),
                                           );
                                         });
                                   },
-                                  child: Text("User ID: ${usuario[0]}")),
+                                  child: Text("User ID: $id")),
                               ElevatedButton(
-                                onPressed: () => _edit(context, usuario),
+                                onPressed: () => _edit(context, user),
                                 child: Icon(Icons.edit),
                               ),
                               ElevatedButton(
-                                  onPressed: () => _delete(usuario[0]), child: Icon(Icons.delete))
+                                  onPressed: () => _delete(id), child: Icon(Icons.delete))
                             ],
                           ),
                         );
@@ -87,6 +93,10 @@ class _QueryViewState extends State<QueryView> {
   void _edit(BuildContext context, List usuario){
     final name = TextEditingController();
     final age = TextEditingController();
+
+    name.text = usuario[1];
+    age.text = usuario[2].toString();
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -142,8 +152,8 @@ class _QueryViewState extends State<QueryView> {
                 // row to update
                 Map<String, dynamic> row = {
                   DatabaseHelper.columnId: usuario[0],
-                  DatabaseHelper.columnName: usuario[1],
-                  DatabaseHelper.columnAge: usuario[2]
+                  DatabaseHelper.columnName: name.text,
+                  DatabaseHelper.columnAge: int.parse(age.text)
                 };
                 final rowsAffected = await dbHelper.update(row);
                 debugPrint('updated $rowsAffected row(s)');

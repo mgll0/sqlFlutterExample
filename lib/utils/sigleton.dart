@@ -12,7 +12,7 @@ class Singleton {
   // si no devuelve la instancia ya creada
   factory Singleton() => _instance ?? Singleton._internal();
 
-  List users = [];
+  List<Map<String, dynamic>> users = [];
 
 
   void iniciarLista() {
@@ -23,12 +23,12 @@ class Singleton {
     this.users = [];
   }
 
-  void add({required List lista}) {
-    this.users = lista;
+  void add(List<Map<String, dynamic>> lista) {
+    users = lista;
   }
 
-  List getList() {
-    return this.users;
+  List<Map<String, dynamic>> getList() {
+    return users;
   }
 }
 
